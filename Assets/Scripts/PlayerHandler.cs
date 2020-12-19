@@ -11,7 +11,10 @@ public class PlayerHandler : LivingEntity
 
     public float continuousDamage = 10f;
     public float timeUntilSnowSpawn = 1f;
+    public float timeBetweenWalkSounds = 0.5f;
+
     public bool hasStarted;
+    public bool isActive;
 
     public GameObject snowPatchPrefab;
     public GameObject corpsePrefab;
@@ -24,12 +27,15 @@ public class PlayerHandler : LivingEntity
     public Transform knobTransform;
     public Transform platformTransform;
 
+    [HideInInspector] public CharacterController controller;
     [HideInInspector] public GameObject currentGift;
 
     private float moveTurnSmoothVelocity;
     private float cameraTurnSmoothVelocity;
     private float lastIdleTime;
+    
     private float lastSnowSpawnTime;
+    private float lastWalkSoundTime;
 
     private Vector3 currentCheckpointPosition;
     private Vector3 currentCheckpointRotation;
@@ -39,7 +45,6 @@ public class PlayerHandler : LivingEntity
     private Vector3 originalPlatformPosition;
 
     private float damageMultiplier;
-    private bool isActive;
     private int currentCheckpointIndex = 0;
 
     private bool cheatActivated;
@@ -47,10 +52,9 @@ public class PlayerHandler : LivingEntity
 
     private Stack<GameObject> corpseStack = new Stack<GameObject>();
 
-    private CharacterController controller;
     [HideInInspector] public AnimationManager animationManager;
 
-    private readonly int SNOWMAN_RELAXED = Animator.StringToHash("Snowman Relaxed");
+    public readonly int SNOWMAN_RELAXED = Animator.StringToHash("Snowman Relaxed");
     private readonly int SNOWMAN_IDLE_1 = Animator.StringToHash("Snowman Idle 1");
     private readonly int SNOWMAN_IDLE_2 = Animator.StringToHash("Snowman Idle 2");
     private readonly int SNOWMAN_IDLE_2_INV = Animator.StringToHash("Snowman Idle 2 Inv");
@@ -87,6 +91,7 @@ public class PlayerHandler : LivingEntity
         currentGift = null;
 
         lastSnowSpawnTime = 0f;
+        lastWalkSoundTime = 0f;
 
         originalKnobPosition = knobTransform.position;
         originalPlatformPosition = platformTransform.position;
@@ -98,7 +103,11 @@ public class PlayerHandler : LivingEntity
         {
             IdleControl(Vector3.zero);
             if (Input.GetKeyDown(KeyCode.F1))
-                cheatActivated = true;
+            {
+                cheatActivated = !cheatActivated;
+                if (!cheatActivated)
+                    health = 100f;
+            }
         }
 
         else
@@ -109,18 +118,19 @@ public class PlayerHandler : LivingEntity
                 moveSpeed = 5f;
             }
 
-            if (isActive && hasStarted)
+            Vector3 playerInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
+
+            if (isActive)
             {
                 if (Input.GetKeyDown(KeyCode.R) && corpseStack.Count > 0)
                 {
-                    GameObject corpse = corpseStack.Pop();
-                    Destroy(corpse);
-
                     health += startingHealth * 0.25f;
                     health = Mathf.Clamp(health, 0f, startingHealth * 1.25f);
+
+                    GameObject corpse = corpseStack.Pop();
+                    Destroy(corpse);
                 }
 
-                Vector3 playerInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
 
                 if (Time.time >= lastSnowSpawnTime + timeUntilSnowSpawn && isGrounded)
                 {
@@ -160,14 +170,29 @@ public class PlayerHandler : LivingEntity
             Vector3 moveDirection = Quaternion.Euler(0f, turnAngle, 0f) * Vector3.forward;
             controller.Move(moveDirection * moveSpeed * Time.deltaTime);
             if (isGrounded)
+            {
                 animationManager.ChangeAnimationState(SNOWMAN_WALK);
+                if (Time.time >= lastWalkSoundTime + timeBetweenWalkSounds)
+                {
+                    AudioManager.Instance.PlayUntilFinish("Walk");
+                    lastWalkSoundTime = Time.time;
+                }
+            }
             else
+            {
                 animationManager.ChangeAnimationState(SNOWMAN_JUMP);
+                AudioManager.Instance.Stop("Walk");
+                lastWalkSoundTime = Time.time - timeBetweenWalkSounds;
+            }
             lastIdleTime = Time.time;
             lastSnowSpawnTime = Time.time;
         }
         else
+        {
             animationManager.ChangeAnimationState(SNOWMAN_RELAXED);
+            AudioManager.Instance.Stop("Walk");
+            lastWalkSoundTime = Time.time - timeBetweenWalkSounds;
+        }
     }
 
     private void PlayerMouseTurn(float point)
@@ -258,6 +283,7 @@ public class PlayerHandler : LivingEntity
                 hasStarted = false;
                 isActive = false;
                 transform.rotation = Quaternion.Euler(currentCheckpointRotation);
+                animationManager.ChangeAnimationState(SNOWMAN_RELAXED);
                 GameManager.Instance.GameOver();
             }
         }
@@ -361,8 +387,11 @@ public class PlayerHandler : LivingEntity
         if (hit.collider.CompareTag("Button") && !isPlatformActive)
         {
             LeanTween.move(knobTransform.gameObject, originalKnobPosition - 0.125f * Vector3.up, 0.5f);
-            LeanTween.move(platformTransform.gameObject, originalPlatformPosition + 5f * Vector3.up, 12.5f);
+            AudioManager.Instance.Play("Moving Platform");
+            LeanTween.move(platformTransform.gameObject, originalPlatformPosition + 5f * Vector3.up, 12.5f)
+                .setOnComplete(() => AudioManager.Instance.Stop("Moving Platform"));
             isPlatformActive = true;
+            AudioManager.Instance.PlayUntilFinish("Button");
         }
     }
 

@@ -1,8 +1,11 @@
 fileFormatVersion: 2
-guid: e6ee8b85ab749374e9f3c0cb4a9d9aa9
+guid: 86ca90064749cd843b6e3ac8e916b1d4
 ModelImporter:
   serializedVersion: 20101
   internalIDToNameTable:
+  - first:
+      74: -7600121324614682817
+    second: metarig|Extend
   - first:
       74: -316027497434044214
     second: metarig|Idle 1
@@ -30,62 +33,7 @@ ModelImporter:
   - first:
       74: 2933577835342229695
     second: metarig|Walk
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Buttons
-    second: {fileID: 2100000, guid: 7b0d992c2849514438c76918b2f5e499, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Carrot
-    second: {fileID: 2100000, guid: 020f4edcbf2be2146a3bf361b88bbd1d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Dark Grey
-    second: {fileID: 2100000, guid: 4fe80683265cfaa47866085776963b53, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Eyes
-    second: {fileID: 2100000, guid: 16d26940f74bbae4f9703ff843f60223, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Lighter Wood
-    second: {fileID: 2100000, guid: 094413de9a4bcaf4e9d261d4ad2ff8b7, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Metal
-    second: {fileID: 2100000, guid: a5d7459890da8584eb27005fec8961d6, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Red
-    second: {fileID: 2100000, guid: 19bca5279ff2d8f41b76593faf169e85, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Scarf
-    second: {fileID: 2100000, guid: 1e0abd1421912074386187f7182e824b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Snow
-    second: {fileID: 2100000, guid: 6d52c9eb4a8d92f4795d69fbf24df467, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Teeth
-    second: {fileID: 2100000, guid: 8407d03a01722014ab419359ffadd882, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Wood
-    second: {fileID: 2100000, guid: 2db0624bd09180b46a4650d32a94e5a5, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -113,6 +61,35 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations:
+    - serializedVersion: 16
+      name: metarig|Extend
+      takeName: metarig|Extend
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 109
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: metarig|Idle 1
       takeName: metarig|Idle 1

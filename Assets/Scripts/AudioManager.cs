@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 using System;
 
 public class AudioManager : MonoBehaviour
@@ -27,6 +28,8 @@ public class AudioManager : MonoBehaviour
             sound.source.volume = sound.volume;
             sound.source.pitch = sound.pitch;
             sound.source.loop = sound.loop;
+
+            sound.source.outputAudioMixerGroup = sound.mixerGroup;
         }
     }
 

@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public Texture2D cursorTexture;
+    public PlayerHandler playerHandler;
 
     public GameObject followCam;
     public GameObject iceDrip;
@@ -16,9 +17,16 @@ public class GameManager : MonoBehaviour
     public GameObject tutorialPanel;
     public GameObject endPanel;
 
+    public GameObject pauseCam;
     public GameObject endCam;
+    public GameObject optionsPanel;
+
+    public GameObject continueButton;
+    public GameObject startButton;
 
     public event Action OnGameStart;
+
+    private bool hasPaused;
 
     private Vector2 mousePosition;
 
@@ -32,6 +40,63 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+
+        if (Input.GetKeyDown(KeyCode.Escape) && InGameUI.Instance)
+        {
+            if (playerHandler.hasStarted && !hasPaused)
+                PauseGame();
+            else if (!playerHandler.hasStarted && hasPaused)
+                UnpauseGame();
+        }
+    }
+
+    private IEnumerator WaitForUnpause()
+    {
+        pauseCam.SetActive(false);
+        followCam.SetActive(true);
+        for (int i = 0; i < UICanvas.transform.childCount; i++)
+        {
+            Transform childTransform = UICanvas.transform.GetChild(i);
+            childTransform.gameObject.SetActive(false);
+            if (childTransform.gameObject == healthBar)
+                childTransform.gameObject.SetActive(true);
+        }
+        if (playerHandler.currentGift != null)
+            InGameUI.Instance.GiftPopup();
+        yield return new WaitForSeconds(1.5f);
+        playerHandler.hasStarted = true;
+        iceDrip.SetActive(true);
+        hasPaused = false;
+    }
+
+    public void UnpauseGame()
+    {
+        AudioManager.Instance.PlayUntilFinish("Click");
+        Cursor.lockState = CursorLockMode.Locked;
+        playerHandler.controller.enabled = true;
+        playerHandler.isActive = true;
+        StartCoroutine(WaitForUnpause());
+    }
+
+    private void PauseGame()
+    {
+        AudioManager.Instance.PlayUntilFinish("Click");
+        playerHandler.hasStarted = false;
+        playerHandler.animationManager.ChangeAnimationState(playerHandler.SNOWMAN_RELAXED);
+        Cursor.lockState = CursorLockMode.Confined;
+        followCam.SetActive(false);
+        pauseCam.SetActive(true);
+        iceDrip.SetActive(false);
+        for (int i = 0; i < UICanvas.transform.childCount; i++)
+        {
+            Transform childTransform = UICanvas.transform.GetChild(i);
+            if (childTransform.gameObject != healthBar && childTransform.gameObject != optionsPanel && childTransform.gameObject != tutorialPanel && childTransform.gameObject != endPanel)
+                childTransform.gameObject.SetActive(true);
+            else
+                childTransform.gameObject.SetActive(false);
+        }
+        InGameUI.Instance.GiftRemove();
+        hasPaused = true;
     }
 
     private void OnGUI()
@@ -44,10 +109,14 @@ public class GameManager : MonoBehaviour
     {
         AudioManager.Instance.PlayUntilFinish("Click");
         AudioManager.Instance.Stop("Main Menu");
+        startButton.SetActive(false);
+        continueButton.SetActive(true);
         for (int i = 0; i < UICanvas.transform.childCount; i++)
         {
             Transform childTransform = UICanvas.transform.GetChild(i);
             childTransform.gameObject.SetActive(false);
+            if (childTransform.name.Equals("Title"))
+                Destroy(childTransform.gameObject);
         }
         StartCoroutine(WaitToDisplayTutorial());
     }
@@ -66,18 +135,33 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         OnGameStart?.Invoke();
     }
+
     public void StartGame()
     {
         AudioManager.Instance.PlayUntilFinish("Click");
         Destroy(tutorialPanel);
         tutorialPanel = null;
+        AudioManager.Instance.Play("Background");
 
         followCam.SetActive(true);
         StartCoroutine(WaitForCamTransition());
     }
 
+    public void OpenSettings()
+    {
+        AudioManager.Instance.PlayUntilFinish("Click");
+        optionsPanel.SetActive(true);
+    }
+
+    public void CloseSettings()
+    {
+        AudioManager.Instance.PlayUntilFinish("Click");
+        optionsPanel.SetActive(false);
+    }
+
     public void GameOver()
     {
+        AudioManager.Instance.Stop("Background");
         AudioManager.Instance.Play("Game Over");
         Cursor.lockState = CursorLockMode.None;
         for (int i = 0; i < UICanvas.transform.childCount; i++)

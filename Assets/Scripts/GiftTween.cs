@@ -21,14 +21,4 @@ public class GiftTween : MonoBehaviour
         LeanTween.move(gameObject, gameObject.transform.position - floatDistance * Vector3.up, floatDuration).setEase(LeanTweenType.easeOutQuad)
             .setOnComplete(TweenUp);
     }
-
-    private void OnDisable()
-    {
-        LeanTween.cancelAll();
-    }
-
-    private void OnEnable()
-    {
-        TweenUp();
-    }
 }

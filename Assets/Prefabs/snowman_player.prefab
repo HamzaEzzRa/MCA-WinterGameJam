@@ -395,7 +395,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 7786466454053435609, guid: e6ee8b85ab749374e9f3c0cb4a9d9aa9, type: 3}
+  m_Mesh: {fileID: 7786466454053435609, guid: 86ca90064749cd843b6e3ac8e916b1d4, type: 3}
   m_Bones:
   - {fileID: 3399344802049675119}
   - {fileID: 6297125452470243862}
@@ -11158,6 +11158,9 @@ MonoBehaviour:
   - {x: 0, y: 180, z: 0}
   - {x: 0, y: 160, z: 0}
   - {x: 0, y: 90, z: 0}
+  checkpointFields: []
+  knobTransform: {fileID: 0}
+  platformTransform: {fileID: 0}
   currentGift: {fileID: 0}
   animationManager: {fileID: 0}
 --- !u!114 &7348036504859330416

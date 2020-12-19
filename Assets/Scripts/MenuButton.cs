@@ -29,4 +29,11 @@ public class MenuButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         targetText.color = pressColor;
     }
+
+    private void OnEnable()
+    {
+        if (targetText == null)
+            targetText = GetComponentInChildren<TMP_Text>();
+        targetText.color = idleColor;
+    }
 }

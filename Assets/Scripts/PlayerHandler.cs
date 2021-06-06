@@ -5,6 +5,8 @@ using System.Collections.Generic;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerHandler : LivingEntity
 {
+    //private Camera mainCamera;
+
     public float moveSpeed = 2.5f;
     public float turnSmoothTime = 0.1f;
     public float timeBetweenIdles = 0.5f;
@@ -27,11 +29,13 @@ public class PlayerHandler : LivingEntity
     public Transform knobTransform;
     public Transform platformTransform;
 
+    public int CorpseCount { get => corpseStack.Count; }
+
     [HideInInspector] public CharacterController controller;
     [HideInInspector] public GameObject currentGift;
 
     private float moveTurnSmoothVelocity;
-    private float cameraTurnSmoothVelocity;
+    //private float cameraTurnSmoothVelocity;
     private float lastIdleTime;
     
     private float lastSnowSpawnTime;
@@ -76,6 +80,8 @@ public class PlayerHandler : LivingEntity
         hasStarted = false;
         isActive = true;
 
+        //mainCamera = Camera.main;
+
         controller = GetComponent<CharacterController>();
         animationManager = GetComponent<AnimationManager>();
 
@@ -102,7 +108,7 @@ public class PlayerHandler : LivingEntity
         if (!hasStarted)
         {
             IdleControl(Vector3.zero);
-            if (Input.GetKeyDown(KeyCode.F1))
+            if (InputManager.Instance.PlayerInput.UIMain.CheatCode.triggered)
             {
                 cheatActivated = !cheatActivated;
                 if (!cheatActivated)
@@ -118,11 +124,9 @@ public class PlayerHandler : LivingEntity
                 moveSpeed = 5f;
             }
 
-            Vector3 playerInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-
             if (isActive)
             {
-                if (Input.GetKeyDown(KeyCode.R) && corpseStack.Count > 0)
+                if (InputManager.Instance.PlayerInput.PlayerMain.Absorb.triggered && corpseStack.Count > 0)
                 {
                     health += startingHealth * 0.25f;
                     health = Mathf.Clamp(health, 0f, startingHealth * 1.25f);
@@ -138,27 +142,27 @@ public class PlayerHandler : LivingEntity
                     SpawnIcePatch();
                 }
 
-                if (Input.GetButtonDown("Jump"))
-                {
-                    if (Jump())
-                    {
-                        lastIdleTime = Time.time;
-                        animationManager.OverrideAnimationState(SNOWMAN_JUMP);
-                    }
-                }
-
-                IdleControl(playerInput);
                 MouseStateControl();
                 FreeFall(controller);
-                PlayerMove(playerInput);
-                PlayerMouseTurn(Camera.main.transform.eulerAngles.y);
+                /*PlayerMouseTurn(mainCamera.transform.eulerAngles.y);*/
 
-                TakeDamage(continuousDamage * damageMultiplier * 0.0175f);
+                TakeDamage(continuousDamage * damageMultiplier * Time.deltaTime);
             }
         }
     }
 
-    private void PlayerMove(Vector3 inputDirection)
+    public new bool Jump()
+    {
+        bool value = base.Jump();
+        if (value)
+        {
+            lastIdleTime = Time.time;
+            animationManager.OverrideAnimationState(SNOWMAN_JUMP);
+        }
+        return value;
+    }
+
+    public void PlayerMove(Vector3 inputDirection)
     {
         inputDirection = inputDirection.normalized;
 
@@ -195,11 +199,12 @@ public class PlayerHandler : LivingEntity
         }
     }
 
-    private void PlayerMouseTurn(float point)
+    /*private void PlayerMouseTurn(float point)
     {
         if (Cursor.lockState == CursorLockMode.Locked && controller.velocity.x == 0 && controller.velocity.z == 0)
         {
-            if (Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0)
+            Vector2 lookInput = InputManager.Instance.PlayerInput.PlayerMain.Look.ReadValue<Vector2>();
+            if (lookInput.x != 0f || lookInput.y != 0f)
             {
                 float smoothedAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, point, ref cameraTurnSmoothVelocity, turnSmoothTime);
                 transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
@@ -207,9 +212,9 @@ public class PlayerHandler : LivingEntity
                     lastIdleTime = Time.time;
             }
         }
-    }
+    }*/
 
-    private void IdleControl(Vector3 movement)
+    public void IdleControl(Vector3 movement)
     {
         if (Time.time >= lastIdleTime + timeBetweenIdles && movement == Vector3.zero)
         {
@@ -236,7 +241,7 @@ public class PlayerHandler : LivingEntity
 
     private void MouseStateControl()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (InputManager.Instance.PlayerInput.UIMain.MouseFocus.triggered)
         {
             if (Cursor.lockState != CursorLockMode.Locked)
                 Cursor.lockState = CursorLockMode.Locked;

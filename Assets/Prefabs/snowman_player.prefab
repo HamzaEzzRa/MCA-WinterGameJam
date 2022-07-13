@@ -11146,7 +11146,9 @@ MonoBehaviour:
   timeBetweenIdles: 5
   continuousDamage: 10
   timeUntilSnowSpawn: 1
+  timeBetweenWalkSounds: 0.5
   hasStarted: 0
+  isActive: 0
   snowPatchPrefab: {fileID: 7699894589409622708, guid: 9f37f30547d2e094799c803ca8af79f1, type: 3}
   corpsePrefab: {fileID: 7581829303800920635, guid: 9d6cf7878c03ae447b7f90b44d8b1e88, type: 3}
   dripSystem: {fileID: 5428526859654599007}
@@ -11161,6 +11163,7 @@ MonoBehaviour:
   checkpointFields: []
   knobTransform: {fileID: 0}
   platformTransform: {fileID: 0}
+  controller: {fileID: 0}
   currentGift: {fileID: 0}
   animationManager: {fileID: 0}
 --- !u!114 &7348036504859330416

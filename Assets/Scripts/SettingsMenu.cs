@@ -15,7 +15,7 @@ public class SettingsMenu : MonoBehaviour
 
     public void SetMouseSensitivity(float sensitivity)
     {
-        followCam.GetComponent<CinemachineFreeLook>().m_XAxis.m_MaxSpeed = sensitivity * 400f;
+        followCam.GetComponent<CinemachineFreeLook>().m_XAxis.m_MaxSpeed = 0.2f * sensitivity;
     }
 
     public void SetMusicVolume(float volume)

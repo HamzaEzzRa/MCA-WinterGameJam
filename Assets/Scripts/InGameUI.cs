@@ -1,23 +1,26 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Slider))]
 public class InGameUI : MonoBehaviour
 {
+    [SerializeField] private Stopwatch stopwatch = default;
+
     public static InGameUI Instance { get; private set; }
 
     public PlayerHandler playerHandler;
     public Gradient healthGradient;
     public GameObject giftIconPrefab;
+    public Slider healthSlider;
 
-    private Slider healthSlider;
     private GameObject giftIcon;
 
     private void Start()
     {
         if (Instance == null)
             Instance = this;
-        healthSlider = GetComponent<Slider>();
+
+        GameManager.Instance.OnGameStart += InitializeStopwatch;
+
         SetMaxHealth();
     }
 
@@ -44,5 +47,22 @@ public class InGameUI : MonoBehaviour
     {
         if (giftIcon != null)
             Destroy(giftIcon);
+    }
+
+    public void ToggleStopwatch()
+    {
+        stopwatch.ToggleStopwatch();
+    }
+
+    public long GetStopwatchScore()
+    {
+        return stopwatch.GetScore();
+    }
+
+    private void InitializeStopwatch()
+    {
+        GameManager.Instance.OnGameStart -= InitializeStopwatch;
+        stopwatch.gameObject.SetActive(true);
+        stopwatch.ToggleStopwatch();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 
@@ -24,6 +25,14 @@ public class GameManager : MonoBehaviour
     public GameObject continueButton;
     public GameObject startButton;
 
+    public GameObject rotationZone;
+
+    public GameObject joystick;
+    public GameObject jumpButton;
+    public GameObject absorbButton;
+
+    public GameObject stopwatch;
+
     public event Action OnGameStart;
 
     private bool hasPaused;
@@ -34,14 +43,23 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null)
             Instance = this;
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Cursor.visible = false;
+
+        QualitySettings.vSyncCount = 1;
     }
 
     private void Update()
     {
-        mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+        mousePosition = InputManager.Instance.PlayerInput.UIMain.MousePosition.ReadValue<Vector2>();
+        mousePosition.y = Screen.height - mousePosition.y;
 
-        if (Input.GetKeyDown(KeyCode.Escape) && InGameUI.Instance)
+        if (InputManager.Instance.PlayerInput.UIMain.Pause.triggered && InGameUI.Instance)
         {
             if (playerHandler.hasStarted && !hasPaused)
                 PauseGame();
@@ -57,7 +75,10 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < UICanvas.transform.childCount; i++)
         {
             Transform childTransform = UICanvas.transform.GetChild(i);
-            childTransform.gameObject.SetActive(false);
+            
+            if (childTransform.gameObject != stopwatch)
+                childTransform.gameObject.SetActive(false);
+            
             if (childTransform.gameObject == healthBar)
                 childTransform.gameObject.SetActive(true);
         }
@@ -67,6 +88,7 @@ public class GameManager : MonoBehaviour
         playerHandler.hasStarted = true;
         iceDrip.SetActive(true);
         hasPaused = false;
+        InGameUI.Instance.ToggleStopwatch();
     }
 
     public void UnpauseGame()
@@ -90,18 +112,22 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < UICanvas.transform.childCount; i++)
         {
             Transform childTransform = UICanvas.transform.GetChild(i);
-            if (childTransform.gameObject != healthBar && childTransform.gameObject != optionsPanel && childTransform.gameObject != tutorialPanel && childTransform.gameObject != endPanel)
+            if (childTransform.gameObject != healthBar && childTransform.gameObject != optionsPanel &&
+                childTransform.gameObject != tutorialPanel && childTransform.gameObject != joystick &&
+                childTransform.gameObject != rotationZone && childTransform.gameObject != jumpButton &&
+                childTransform.gameObject != absorbButton && childTransform.gameObject != endPanel)
                 childTransform.gameObject.SetActive(true);
             else
                 childTransform.gameObject.SetActive(false);
         }
+        InGameUI.Instance.ToggleStopwatch();
         InGameUI.Instance.GiftRemove();
         hasPaused = true;
     }
 
     private void OnGUI()
     {
-        if (Cursor.lockState != CursorLockMode.Locked)
+        if (Utility.Platform != RuntimePlatform.Android && Utility.Platform != RuntimePlatform.IPhonePlayer && Cursor.lockState != CursorLockMode.Locked)
             GUI.DrawTexture(new Rect(mousePosition.x - (38.4f / 2), mousePosition.y - (44.4f / 2), 38.4f, 44.4f), cursorTexture);
     }
 
@@ -124,7 +150,10 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitToDisplayTutorial()
     {
         yield return new WaitForSeconds(0.1f);
-        tutorialPanel.SetActive(true);
+        if (Utility.Platform != RuntimePlatform.Android && Utility.Platform != RuntimePlatform.IPhonePlayer)
+            tutorialPanel.SetActive(true);
+        else
+            StartGame();
     }
 
     private IEnumerator WaitForCamTransition()
@@ -132,7 +161,9 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
         healthBar.SetActive(true);
         iceDrip.SetActive(true);
-        Cursor.lockState = CursorLockMode.Locked;
+        rotationZone.SetActive(true);
+        if (Utility.Platform != RuntimePlatform.Android && Utility.Platform != RuntimePlatform.IPhonePlayer)
+            Cursor.lockState = CursorLockMode.Locked;
         OnGameStart?.Invoke();
     }
 
@@ -161,6 +192,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        InGameUI.Instance.ToggleStopwatch();
         AudioManager.Instance.Stop("Background");
         AudioManager.Instance.Play("Game Over");
         Cursor.lockState = CursorLockMode.None;
@@ -172,6 +204,11 @@ public class GameManager : MonoBehaviour
         endPanel.SetActive(true);
         followCam.SetActive(false);
         endCam.SetActive(true);
+    }
+
+    public void Reload()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void Quit()

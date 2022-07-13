@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 221518ef91623a7438a71fef23660601, type: 3}
   m_Name: WhiteBalance
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   m_AdvancedMode: 0
   temperature:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: -6
     min: -100
     max: 100
   tint:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 6
     min: -100
     max: 100
 --- !u!114 &-3082242860286029618
@@ -136,7 +136,6 @@ MonoBehaviour:
   m_Name: Global Volume Profile
   m_EditorClassIdentifier: 
   components:
-  - {fileID: 1682050418725949819}
   - {fileID: 3213027085012256026}
   - {fileID: 7703782609681855860}
   - {fileID: 8179251299755741116}
@@ -144,23 +143,6 @@ MonoBehaviour:
   - {fileID: -679229708998210926}
   - {fileID: -3651877711976160211}
   - {fileID: -3082242860286029618}
---- !u!114 &1682050418725949819
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97c23e3b12dc18c42a140437e53d3951, type: 3}
-  m_Name: Tonemapping
-  m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  mode:
-    m_OverrideState: 1
-    m_Value: 1
 --- !u!114 &3213027085012256026
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -177,10 +159,10 @@ MonoBehaviour:
   m_AdvancedMode: 0
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 0.3
   contrast:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 6
     min: -100
     max: 100
   colorFilter:
@@ -224,7 +206,7 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.4
     min: 0
     max: 1
   smoothness:
@@ -247,17 +229,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5485954d14dfb9a4c8ead8edb0ded5b1, type: 3}
   m_Name: LiftGammaGain
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   m_AdvancedMode: 0
   lift:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.8880926, z: 0.8705514, w: 0.014973199}
+    m_Value: {x: 1, y: 0.9421773, z: 0.9245188, w: -0.0064171753}
   gamma:
     m_OverrideState: 1
-    m_Value: {x: 0.94911605, y: 0.8366455, z: 1, w: 0}
+    m_Value: {x: 0.90004426, y: 1, z: 0.97343445, w: 0.0855615}
   gain:
     m_OverrideState: 1
-    m_Value: {x: 0.9285106, y: 1, z: 0.95257205, w: 0}
+    m_Value: {x: 0.98058367, y: 1, z: 0.98543775, w: 0.122537225}
 --- !u!114 &8179251299755741116
 MonoBehaviour:
   m_ObjectHideFlags: 3
